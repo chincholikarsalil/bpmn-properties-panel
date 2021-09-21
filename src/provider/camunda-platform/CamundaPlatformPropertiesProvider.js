@@ -199,7 +199,7 @@ function ImplementationGroup(element) {
 function UserAssignmentGroup(element) {
 
   const group = {
-    label: 'User Assignment',
+    label: 'User assignment',
     id: 'CamundaPlatform__UserAssignment',
     component: Group,
     entries: [
@@ -267,7 +267,7 @@ function ConditionGroup(element) {
 
 function StartInitiatorGroup(element) {
   const group = {
-    label: 'Start Initiator',
+    label: 'Start initiator',
     id: 'CamundaPlatform__StartInitiator',
     component: Group,
     entries: [
@@ -284,7 +284,7 @@ function StartInitiatorGroup(element) {
 
 function ExternalTaskGroup(element) {
   const group = {
-    label: 'External Task',
+    label: 'External task',
     id: 'CamundaPlatform__ExternalTask',
     component: Group,
     entries: [
@@ -317,7 +317,7 @@ function MultiInstanceGroup(element) {
 
 function AsynchronousContinuationsGroup(element) {
   const group = {
-    label: 'Asynchronous Continuations',
+    label: 'Asynchronous continuations',
     id: 'CamundaPlatform__AsynchronousContinuations',
     component: Group,
     entries: [
@@ -334,7 +334,7 @@ function AsynchronousContinuationsGroup(element) {
 
 function JobExecutionGroup(element) {
   const group = {
-    label: 'Job Execution',
+    label: 'Job execution',
     id: 'CamundaPlatform__JobExecution',
     component: Group,
     entries: [
@@ -351,7 +351,7 @@ function JobExecutionGroup(element) {
 
 function CandidateStarterGroup(element) {
   const group = {
-    label: 'Candidate Starter',
+    label: 'Candidate starter',
     id: 'CamundaPlatform__CandidateStarter',
     component: Group,
     entries: [
@@ -368,7 +368,7 @@ function CandidateStarterGroup(element) {
 
 function FieldInjectionGroup(element) {
   const group = {
-    label: 'Field Injection',
+    label: 'Field injections',
     id: 'CamundaPlatform__FieldInjection',
     component: ListGroup,
     ...FieldInjectionProps({ element })
@@ -383,7 +383,7 @@ function FieldInjectionGroup(element) {
 
 function HistoryCleanupGroup(element) {
   const group = {
-    label: 'History Cleanup',
+    label: 'History cleanup',
     id: 'CamundaPlatform__HistoryCleanup',
     component: Group,
     entries: [
@@ -481,7 +481,7 @@ function OutMappingPropagationGroup(element) {
 
 function ProcessVariablesGroup(element) {
   const group = {
-    label: 'Process Variables',
+    label: 'Process variables',
     id: 'CamundaPlatform__ProcessVariables',
     component: ListGroup,
     ...ProcessVariablesProps({ element })
@@ -544,7 +544,7 @@ function FormGroup(element) {
 
 function ExecutionListenerGroup(element) {
   const group = {
-    label: 'Execution listener',
+    label: 'Execution listeners',
     id: 'CamundaPlatform__ExecutionListener',
     component: ListGroup,
     ...ExecutionListenerProps({ element })
@@ -619,7 +619,7 @@ function ConnectorOutputGroup(element) {
 
 function ExtensionPropertiesGroup(element) {
   const group = {
-    label: 'Extension Properties',
+    label: 'Extension properties',
     id: 'CamundaPlatform__ExtensionProperties',
     component: ListGroup,
     ...ExtensionPropertiesProps({ element })

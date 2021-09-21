@@ -116,7 +116,7 @@ export function JavaClass(props) {
 
   return TextField({
     element,
-    id,
+    id: 'javaClass',
     label: translate('Java class'),
     getValue,
     setValue,
@@ -185,7 +185,7 @@ function ResultVariable(props) {
   return TextField({
     element,
     id: 'expressionResultVariable',
-    label: translate('Result Variable'),
+    label: translate('Result variable'),
     getValue,
     setValue,
     debounce
@@ -219,7 +219,7 @@ export function DelegateExpression(props) {
 
   return TextField({
     element,
-    id,
+    id: 'delegateExpression',
     label: translate('Delegate expression'),
     getValue,
     setValue,
