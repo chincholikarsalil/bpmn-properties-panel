@@ -57,7 +57,6 @@ describe('<ImplementationTypeUtils', function() {
       // then
       expect(businessObject).to.be.false;
     });
-
   });
 
 

@@ -1,6 +1,7 @@
 import ListEntry from '@bpmn-io/properties-panel/lib/components/entries/List';
 import CollapsibleEntry from '@bpmn-io/properties-panel/lib/components/entries/Collapsible';
 import SelectEntry from '@bpmn-io/properties-panel/lib/components/entries/Select';
+import TextField, { isEdited as textFieldIsEdited } from '@bpmn-io/properties-panel/lib/components/entries/TextField';
 
 
 import {
@@ -85,7 +86,13 @@ const IMPLEMENTATION_TYPE_TO_LABEL = {
 const EVENT_TO_LABEL = {
   start: 'Start',
   end: 'End',
-  take: 'Take'
+  take: 'Take',
+  create:'Create',
+  assignment: 'Assignment',
+  complete: 'Complete',
+  delete: 'Delete',
+  update: 'Update',
+  timeout: 'Timeout'
 };
 
 /**
@@ -109,7 +116,7 @@ export function ExecutionListenerProps(props) {
 
   return {
     items: listeners.map((listener, index) => {
-      const id = `${element.id}-listener-${index}`;
+      const id = `${element.id}-executionListener-${index}`;
 
       // @TODO(barmac): Find a way to pass translate for internationalized label.
       return {
@@ -123,7 +130,7 @@ export function ExecutionListenerProps(props) {
         remove: RemoveListenerContainer({ listener })
       };
     }),
-    add: AddListener
+    add: AddExecutionListener
   };
 }
 
@@ -138,6 +145,68 @@ function ExecutionListener(props) {
   return [{
     id: `${idPrefix}-eventType`,
     component: <EventType id={ `${idPrefix}-eventType` } element={ element } listener={ listener } />
+  },
+  {
+    id: `${idPrefix}-listenerType`,
+    component: <ListenerType id={ `${idPrefix}-listenerType` } element={ element } listener={ listener } />
+  },
+  ...ImplementationDetails({ idPrefix, element, listener }),
+  {
+    id: `${idPrefix}-fields`,
+    component: <Fields id={ `${idPrefix}-fields` } element={ element } listener={ listener } />
+  }];
+}
+
+export function TaskListenerProps(props) {
+
+  const {
+    element
+  } = props;
+
+  if (!is(element, 'bpmn:UserTask')) {
+    return;
+  }
+
+  const businessObject = getListenersContainer(element);
+  const listeners = getExtensionElementsList(businessObject, 'camunda:TaskListener');
+
+  return {
+    items: listeners.map((listener, index) => {
+      const id = `${element.id}-taskListener-${index}`;
+
+      // @TODO(barmac): Find a way to pass translate for internationalized label.
+      return {
+        id,
+        label: getListenerLabel(listener),
+        entries: TaskListener({
+          idPrefix: id,
+          element,
+          listener
+        }),
+
+        remove: RemoveListenerContainer({ listener })
+      };
+    }),
+
+    add: AddTaskListener
+  };
+}
+
+function TaskListener(props) {
+  const {
+    idPrefix,
+    element,
+    listener
+  } = props;
+
+
+  return [{
+    id: `${idPrefix}-eventType`,
+    component: <EventType id={ `${idPrefix}-eventType` } element={ element } listener={ listener } />
+  },
+  {
+    id: `${idPrefix}-listenerId`,
+    component: <ListenerId id={ `${idPrefix}-listenerId` } element={ element } listener={ listener } />
   },
   {
     id: `${idPrefix}-listenerType`,
@@ -195,6 +264,18 @@ function EventType({ id, element, listener }) {
   }
 
   function getOptions() {
+
+    if (listener.$type == 'camunda:TaskListener') {
+      return [
+        { value: 'create', label: translate('create') },
+        { value: 'assignment', label: translate('assignment') },
+        { value: 'complete', label: translate('complete') },
+        { value: 'delete', label: translate('delete') },
+        { value: 'update', label: translate('update') },
+        { value: 'timeout', label: translate('timeout') }
+      ];
+    }
+
     if (is(element, 'bpmn:SequenceFlow')) {
       return [ { value: 'take', label: translate('take') } ];
     }
@@ -212,6 +293,36 @@ function EventType({ id, element, listener }) {
     setValue={ setValue }
     getOptions={ getOptions }
   />;
+}
+
+function ListenerId({ id, element, listener }) {
+
+  const translate = useService('translate');
+  const debounce = useService('debounceInput');
+  const commandStack = useService('commandStack');
+  const businessObject = getBusinessObject(listener);
+
+  let options = {
+    element,
+    id: id,
+    label: translate('Listener ID'),
+    debounce,
+    isEdited: textFieldIsEdited,
+    setValue: (value) => {
+      commandStack.execute('properties-panel.update-businessobject', {
+        element: element,
+        businessObject: businessObject,
+        properties: {
+          'camunda:id': value
+        }
+      });
+    },
+    getValue: () => {
+      return businessObject.get('camunda:id');
+    }
+  };
+
+  return TextField(options);
 }
 
 function ListenerType({ id, element, listener }) {
@@ -336,7 +447,8 @@ function Fields(props) {
 function AddListener(props) {
 
   const {
-    children
+    children,
+    listenerGroup
   } = props;
 
   const {
@@ -349,8 +461,8 @@ function AddListener(props) {
   const addListener = event => {
     event.stopPropagation();
 
-    const listener = bpmnFactory.create('camunda:ExecutionListener', {
-      event: getDefaultEvent(element),
+    const listener = bpmnFactory.create(listenerGroup, {
+      event: getDefaultEvent(element, listenerGroup),
       class: ''
     });
 
@@ -364,6 +476,14 @@ function AddListener(props) {
       { children }
     </div>
   );
+}
+
+function AddTaskListener(props) {
+  return AddListener({ ...props, listenerGroup:'camunda:TaskListener' });
+}
+
+function AddExecutionListener(props) {
+  return AddListener({ ...props, listenerGroup:'camunda:ExecutionListener' });
 }
 
 // helper
@@ -393,7 +513,9 @@ function getListenerType(listener) {
   return getImplementationType(listener);
 }
 
-function getDefaultEvent(element) {
+function getDefaultEvent(element, listenerGroup) {
+  if (listenerGroup === 'camunda:TaskListener') return 'create';
+
   return is(element, 'bpmn:SequenceFlow') ? 'take' : 'start';
 }
 
